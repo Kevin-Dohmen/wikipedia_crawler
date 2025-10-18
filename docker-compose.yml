@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_DB: ${POSTGRES_DB:-wikipedia_crawler}
     volumes:
-      - ./create.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/create.sql:/docker-entrypoint-initdb.d/init.sql
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
