@@ -166,22 +166,22 @@ def scrape_step(site: uq.urlModel, cur, con):
         if content:
 
             urls = extract_urls(content, base_url=site.url)
-            new_url_models = uq.add_urls(urls, cur, con)
+            new_url_models = uq.add_urls_nocommit(urls, cur)
             added = len(new_url_models)
-            uq.add_url_relations(site.id, [u.id for u in new_url_models], cur, con)
-                
-            con.commit()
+            uq.add_url_relations_nocommit(site.id, [u.id for u in new_url_models], cur)
 
-            uq.mark_url_as_scanned(site.id, cur, con)
+            uq.mark_url_as_scanned_nocommit(site.id, cur)
 
         else:
-            uq.mark_url_as_scanned(site.id, cur, con)
+            uq.mark_url_as_scanned_nocommit(site.id, cur)
     except requests.ConnectionError:
-        uq.url_set_error(site.id, cur, con)
-        uq.mark_url_as_unscanned(site.id, cur, con)
+        uq.url_set_error_nocommit(site.id, cur)
+        uq.mark_url_as_unscanned_nocommit(site.id, cur)
     except Exception as e:
         print(f"Error processing {site.url}: {e}")
-        uq.mark_url_as_unscanned(site.id, cur, con)
+        uq.mark_url_as_unscanned_nocommit(site.id, cur)
+    finally:
+        con.commit()
 
     if debug:
         cur.execute("SELECT COUNT(*) FROM found_urls")
